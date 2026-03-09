@@ -1,0 +1,6 @@
+id,topic,difficulty,latency_s,structure_ok,correct_answer_valid,distractor_coverage,section_coverage,hit_at_k,keyword_coverage,question_preview,correct_answer
+mcq_001,buoyancy,medium,12.82,True,True,0.0,1.0,True,0.5,A cylindrical container of water is filled to a height of 1 meter with a small wooden block floating at the surface. The density of the wooden block i…,C
+mcq_002,Bernoulli's principle in a narrowing pipe,medium,27.06,True,True,0.0,1.0,False,0.0,"A horizontal pipe carries water from a reservoir to a lower elevation where the pipe narrows. At the wider section of the pipe, the water speed is 2 m…",B
+mcq_003,Poiseuille's law and blood vessel resistance,hard,7.16,True,True,0.0,1.0,False,0.0,"A patient is diagnosed with a condition that causes a narrowing of the blood vessels. According to Poiseuille's law, how does this narrowing affect th…",C
+mcq_004,Pascal's principle and hydraulic lift,medium,11.1,True,True,0.0,1.0,True,0.5,"A hydraulic lift is used to raise a car weighing 10,000 N. The lift consists of a large piston with an area of 2 m² and a small piston with an area of…",C
+mcq_005,hydrostatic pressure at depth,easy,15.59,True,True,0.0,1.0,True,0.25,A scuba diver descends to a depth of 30 meters in the ocean. Assuming the density of seawater is approximately 1025 kg/m³ and atmospheric pressure at …,C

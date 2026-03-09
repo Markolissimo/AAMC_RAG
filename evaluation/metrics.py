@@ -271,7 +271,7 @@ def llm_judge(
     response = llm_client.chat.completions.create(
         model=model,
         messages=[{"role": "user", "content": prompt}],
-        temperature=0,
+        temperature=1,
         response_format={"type": "json_object"},
     )
     raw = response.choices[0].message.content.strip()
