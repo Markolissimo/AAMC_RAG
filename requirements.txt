@@ -1,0 +1,41 @@
+# Core LLM & RAG
+openai
+langchain
+langchain-openai
+langchain-community
+langchain-text-splitters
+
+# Vector store (ChromaDB)
+chromadb
+langchain-chroma    
+
+# PDF parsing (best math preservation)
+pymupdf
+
+# Embeddings — local backends
+sentence-transformers
+torch
+transformers
+
+# Streamlit UI
+streamlit
+streamlit-extras
+
+# Math rendering
+latex2mathml
+
+# Evaluation & testing
+pytest
+pytest-asyncio
+ragas
+
+# Utilities
+python-dotenv
+pydantic
+numpy
+pandas
+tqdm
+tiktoken
+
+# Logging
+loguru

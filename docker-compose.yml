@@ -1,0 +1,103 @@
+version: '3.8'
+
+services:
+  mcat-tutor:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mcat-ai-tutor
+    ports:
+      - "8501:8501"
+    environment:
+      # OpenAI API key (required for default setup)
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      
+      # LLM configuration
+      - LLM_MODEL=${LLM_MODEL:-gpt-4o-mini}
+      
+      # Embedding backend: openai | local | qwen3
+      - EMBEDDING_BACKEND=${EMBEDDING_BACKEND:-openai}
+      - EMBEDDING_MODEL=${EMBEDDING_MODEL:-text-embedding-3-small}
+      
+      # Chunking configuration
+      - CHUNK_SIZE=${CHUNK_SIZE:-500}
+      - CHUNK_OVERLAP=${CHUNK_OVERLAP:-50}
+      - TOP_K_RETRIEVAL=${TOP_K_RETRIEVAL:-4}
+      
+      # Vector store path
+      - VECTOR_STORE_PATH=/app/data/vector_store
+    
+    volumes:
+      # Persist vector store across container restarts
+      - vector_store:/app/data/vector_store
+      
+      # Persist evaluation results
+      - eval_results:/app/data/eval_results
+      
+      # Mount source PDFs (optional: if you want to add/replace PDFs without rebuilding)
+      - ./docs:/app/docs:ro
+      
+      # Mount .env file for local development (optional)
+      # Uncomment if you prefer .env over environment variables above
+      # - ./.env:/app/.env:ro
+    
+    restart: unless-stopped
+    
+    # Resource limits (adjust based on your needs)
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 4G
+        reservations:
+          cpus: '1.0'
+          memory: 2G
+    
+    # Health check
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8501/_stcore/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Optional: GPU-enabled service for local embeddings (Qwen3)
+  # Uncomment if you want to use Qwen3-Embedding-4B with GPU acceleration
+  # mcat-tutor-gpu:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   container_name: mcat-ai-tutor-gpu
+  #   ports:
+  #     - "8501:8501"
+  #   environment:
+  #     - OPENAI_API_KEY=${OPENAI_API_KEY}
+  #     - LLM_MODEL=${LLM_MODEL:-gpt-4o-mini}
+  #     - EMBEDDING_BACKEND=qwen3
+  #     - EMBEDDING_MODEL=Qwen/Qwen3-Embedding-4B
+  #     - CHUNK_SIZE=${CHUNK_SIZE:-500}
+  #     - CHUNK_OVERLAP=${CHUNK_OVERLAP:-50}
+  #     - TOP_K_RETRIEVAL=${TOP_K_RETRIEVAL:-4}
+  #     - VECTOR_STORE_PATH=/app/data/vector_store
+  #   volumes:
+  #     - vector_store:/app/data/vector_store
+  #     - eval_results:/app/data/eval_results
+  #     - ./docs:/app/docs:ro
+  #     - huggingface_cache:/root/.cache/huggingface
+  #   deploy:
+  #     resources:
+  #       reservations:
+  #         devices:
+  #           - driver: nvidia
+  #             count: 1
+  #             capabilities: [gpu]
+  #   restart: unless-stopped
+
+volumes:
+  vector_store:
+    driver: local
+  eval_results:
+    driver: local
+  # Uncomment if using GPU service
+  # huggingface_cache:
+  #   driver: local

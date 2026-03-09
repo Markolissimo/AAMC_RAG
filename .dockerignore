@@ -1,0 +1,81 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.eggs/
+*.egg
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Environment variables (will be passed via docker-compose)
+.env
+.env.local
+.env.example
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Vector store (will be created in container)
+data/vector_store/
+*.sqlite3
+*.db
+
+# Evaluation results (will be created in container)
+data/eval_results/
+
+# Experiment artifacts
+experiments/
+
+# Model cache (will be downloaded in container if needed)
+models/
+checkpoints/
+~/.cache/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+tests/
+
+# Logs
+*.log
+logs/
+
+# Documentation
+*.md
+!README.md
+
+# Docker files themselves
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb

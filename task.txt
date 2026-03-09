@@ -1,0 +1,130 @@
+AI Engineer Exercise – MCAT AI Tutor Prototype
+Overview
+We are building an AI tutoring system that generates MCAT-style practice questions and explanations.
+The goal is to create explanations that behave like a good tutor, not a textbook. Students should be able to
+ask for:
+● simpler explanations
+● tighter explanations
+● another way to think about the concept
+● another analogy
+
+For this exercise, you will build a small Retrieval-Augmented Generation (RAG) prototype using MCAT
+Fluid Dynamics chapters.
+The exercise is intended to take about 2 hours.
+A simple prototype is completely fine.
+
+Provided Data
+You will receive two PDF chapters:
+● Princeton Review – Fluid Dynamics
+● ExamKrackers – Fluids
+
+These should be used as the knowledge base for your system.
+Your system should retrieve relevant information from these documents to generate explanations and
+questions.
+
+Explanation Style
+
+Explanations should sound like a tutor thinking out loud, not a textbook summary.
+The structure should roughly follow this pattern:
+1. List the small toolkit (3–5 equations or concepts needed)
+2. Think through the logic step-by-step
+3. Use a simple analogy
+4. Explain the common MCAT trap
+5. End with a simple memory rule
+
+Example style:
+Toolkit
+Ohm’s Law
+V = iR
+Power equations
+P = iV
+P = i2R
+Now think it through.
+Imagine a battery pushing electricity through tissue.
+Two things control what happens:
+● how hard the battery pushes
+● how hard the circuit fights back
+
+The push = voltage.
+The fight = resistance.
+The thing that actually delivers energy is current.
+More current → more power.
+From Ohm’s law:
+i = V / R
+So:
+● higher voltage → more current
+
+● higher resistance → less current
+
+Analogy
+Resistance is like a clog in a pipe.
+More clog → less flow.
+MCAT Trap
+Students see:
+P = i2R
+and think increasing resistance increases power.
+But increasing resistance reduces current.
+Memory Rule
+To increase power:
+● increase voltage
+● decrease resistance.
+
+Task 1 – Explanation Engine
+Build a simple system that can answer questions like:
+Explain Bernoulli’s principle.
+Explain Bernoulli’s principle in simpler terms.
+Explain Bernoulli’s principle another way.
+Give another analogy for Bernoulli’s principle.
+Explain why fluid moves faster in a narrow pipe.
+Explain why objects float.
+The system should retrieve information from the PDFs and generate explanations in the style described above.
+
+Task 2 – MCAT Question Generator
+Your system should also generate MCAT-style questions.
+Example prompt:
+Generate an MCAT question about buoyancy.
+Expected output format:
+Question
+Multiple choice answers (A/B/C/D)
+Correct answer
+Explanation in the tutor style described above.
+
+System Requirements
+Build a simple RAG pipeline that:
+1. Ingests the PDFs
+2. Splits them into retrievable chunks
+3. Creates embeddings
+4. Retrieves relevant chunks for a question
+5. Uses those chunks to generate explanations or questions
+6. The system must handle mathematical formatting correctly (using LaTeX or clear plain-text notation) so
+that equations don't break during the RAG retrieval process
+
+You may use any tools such as:
+Python
+LangChain
+LlamaIndex
+OpenAI API
+local embeddings
+A simple implementation is sufficient.
+
+Submission
+
+Please submit:
+● your code (GitHub repo or zip file)
+● instructions to run the prototype (streamlit app)
+● a short design note (1–2 pages) explaining:
+
+How you chunked the documents
+How retrieval works
+How explanation style is controlled
+What you would improve with more time
+
+Evaluation Criteria
+We will evaluate:
+● retrieval quality
+● explanation clarity
+● system design
+● prompt structure
+● reasoning about improvements
+
+A working prototype (streamlit app) with clear design decisions is more important than a polished interface.
