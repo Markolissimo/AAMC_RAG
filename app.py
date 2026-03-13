@@ -99,6 +99,19 @@ st.divider()
 # Sidebar — settings + PDF upload
 # ---------------------------------------------------------------------------
 with st.sidebar:
+    # ---- Health Check ----
+    if st.button("🏥 Check Server Health", use_container_width=True):
+        import requests
+        try:
+            response = requests.get("http://localhost:8501/_stcore/health", timeout=5)
+            if response.status_code == 200:
+                st.success("✅ Server is healthy and running!")
+            else:
+                st.warning(f"⚠️ Server responded with status {response.status_code}")
+        except requests.exceptions.RequestException:
+            st.error("❌ Server is not responding. If deployed on Render, the server may be sleeping. Please wait ~1 minute for it to wake up, then try again.")
+    
+    st.divider()
     st.header("⚙️ Settings")
 
     model_choice = st.selectbox(
@@ -112,6 +125,9 @@ with st.sidebar:
     top_k = st.slider("Retrieved chunks (top-K)", min_value=2, max_value=8, value=4, step=1)
     os.environ["TOP_K_RETRIEVAL"] = str(top_k)
 
+    st.caption(f"🔢 Embeddings: `text-embedding-3-small`")
+    st.caption(f"🧠 LLM: `{model_choice}`")
+    st.caption("v0.2.0 — MCAT Fluid Dynamics RAG Prototype")
     st.divider()
 
     # ---- Document Upload ----
@@ -243,25 +259,6 @@ with st.sidebar:
             st.session_state.upload_statuses = {}
             st.session_state.messages = []
             st.rerun()
-
-    st.divider()
-    
-    # ---- Health Check ----
-    if st.button("🏥 Check Server Health", use_container_width=True):
-        import requests
-        try:
-            response = requests.get("http://localhost:8501/_stcore/health", timeout=5)
-            if response.status_code == 200:
-                st.success("✅ Server is healthy and running!")
-            else:
-                st.warning(f"⚠️ Server responded with status {response.status_code}")
-        except requests.exceptions.RequestException:
-            st.error("❌ Server is not responding. If deployed on Render, the server may be sleeping. Please wait ~1 minute for it to wake up, then try again.")
-    
-    st.divider()
-    st.caption(f"🔢 Embeddings: `text-embedding-3-small`")
-    st.caption(f"🧠 LLM: `{model_choice}`")
-    st.caption("v0.2.0 — MCAT Fluid Dynamics RAG Prototype")
 
 
 # ---------------------------------------------------------------------------
