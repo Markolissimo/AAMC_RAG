@@ -16,7 +16,7 @@ services:
       - LLAMA_CLOUD_API_KEY=${LLAMA_CLOUD_API_KEY}
 
       # LLM configuration
-      - LLM_MODEL=${LLM_MODEL:-gpt-4o-mini}
+      - LLM_MODEL=${LLM_MODEL:-gpt-4o}
 
       # Embedding model (OpenAI text-embedding-3-small only)
       - EMBEDDING_MODEL=${EMBEDDING_MODEL:-text-embedding-3-small}
