@@ -101,28 +101,10 @@ st.divider()
 with st.sidebar:
     st.header("⚙️ Settings")
 
-    openai_key = st.text_input(
-        "OpenAI API Key",
-        value=os.getenv("OPENAI_API_KEY", ""),
-        type="password",
-        help="sk-… required for embeddings and LLM calls.",
-    )
-    if openai_key:
-        os.environ["OPENAI_API_KEY"] = openai_key
-
-    llama_key = st.text_input(
-        "LlamaCloud API Key",
-        value=os.getenv("LLAMA_CLOUD_API_KEY", ""),
-        type="password",
-        help="llx-… required for PDF OCR parsing.",
-    )
-    if llama_key:
-        os.environ["LLAMA_CLOUD_API_KEY"] = llama_key
-
     model_choice = st.selectbox(
         "LLM Model",
         ["gpt-4o-mini", "gpt-4o"],
-        index=0,
+        index=0 if os.getenv("LLM_MODEL", "gpt-4o-mini") == "gpt-4o-mini" else 1,
         help="gpt-4o-mini is faster and cheaper; gpt-4o gives higher quality.",
     )
     os.environ["LLM_MODEL"] = model_choice
