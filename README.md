@@ -14,7 +14,9 @@ pip install -r requirements.txt
 ### 2. Configure environment
 ```bash
 cp .env.example .env
-# Edit .env and add your OPENAI_API_KEY
+# Edit .env and add:
+#   OPENAI_API_KEY=sk-...        (for LLM + embeddings)
+#   LLAMA_CLOUD_API_KEY=llx-...  (for PDF OCR parsing)
 ```
 
 ### 3. Run the Streamlit app
@@ -22,7 +24,7 @@ cp .env.example .env
 streamlit run app.py
 ```
 
-On first launch the system automatically ingests the two PDFs in `docs/`, embeds all chunks, and builds the ChromaDB vector store (~30–60s). Subsequent launches load from disk instantly.
+On first launch the app starts with an empty knowledge base. Upload a PDF via the sidebar — it will be OCR-parsed by LlamaCloud, saved as markdown in `docs/`, chunked, embedded, and added to the ChromaDB vector store. Subsequent launches load from disk instantly.
 
 ---
 
@@ -30,14 +32,15 @@ On first launch the system automatically ingests the two PDFs in `docs/`, embeds
 
 ### Prerequisites
 - Docker Engine 20.10+ and Docker Compose v2.0+
-- For GPU support (Qwen3 embeddings): NVIDIA Docker runtime
 
 ### Quick Start with Docker
 
-**1. Create `.env` file with your API key:**
+**1. Create `.env` file with your API keys:**
 ```bash
 cp .env.example .env
-# Edit .env and add OPENAI_API_KEY=sk-...
+# Edit .env and add:
+#   OPENAI_API_KEY=sk-...
+#   LLAMA_CLOUD_API_KEY=llx-...
 ```
 
 **2. Build and run with docker-compose:**
@@ -46,7 +49,7 @@ docker-compose up -d
 ```
 
 **3. Access the app:**
-Open http://localhost:8501 in your browser.
+Open http://localhost:8501 in your browser, then upload a PDF via the sidebar.
 
 **4. View logs:**
 ```bash
@@ -60,49 +63,25 @@ docker-compose down
 
 ### Configuration via Environment Variables
 
-All configuration can be passed via `.env` file or `docker-compose.yml`:
-
 ```bash
 # .env file
 OPENAI_API_KEY=sk-...
+LLAMA_CLOUD_API_KEY=llx-...
 LLM_MODEL=gpt-4o-mini
-EMBEDDING_BACKEND=openai          # or: local, qwen3
 EMBEDDING_MODEL=text-embedding-3-small
 CHUNK_SIZE=500
 CHUNK_OVERLAP=50
 TOP_K_RETRIEVAL=4
 ```
 
-### Using Local Embeddings (No API Key for Embeddings)
-
-Edit `docker-compose.yml` to use `local` backend:
-```yaml
-environment:
-  - EMBEDDING_BACKEND=local
-  - EMBEDDING_MODEL=all-MiniLM-L6-v2
-```
-
-Then rebuild:
-```bash
-docker-compose up -d --build
-```
-
-### GPU Support for Qwen3 Embeddings
-
-Uncomment the `mcat-tutor-gpu` service in `docker-compose.yml` and run:
-```bash
-docker-compose up mcat-tutor-gpu -d
-```
-
-Requires NVIDIA Docker runtime installed.
-
 ### Persistent Data
 
-Vector store and evaluation results are persisted in Docker volumes:
+All data is persisted in Docker named volumes:
 - `vector_store` → `/app/data/vector_store`
 - `eval_results` → `/app/data/eval_results`
+- `docs` → `/app/docs` (OCR-generated markdown files)
 
-To reset the vector store:
+To reset everything:
 ```bash
 docker-compose down -v
 docker-compose up -d
@@ -117,7 +96,9 @@ docker build -t mcat-ai-tutor .
 # Run
 docker run -p 8501:8501 \
   -e OPENAI_API_KEY=sk-... \
+  -e LLAMA_CLOUD_API_KEY=llx-... \
   -v $(pwd)/data/vector_store:/app/data/vector_store \
+  -v $(pwd)/docs:/app/docs \
   mcat-ai-tutor
 ```
 
@@ -133,10 +114,12 @@ AAMC_test_task/
 │   └── <uuid>/
 ├── src/
 │   ├── ingestion/
-│   │   ├── pdf_parser.py              # PDF → text with math normalization (PyMuPDF)
+│   │   ├── ocr.py                     # LlamaCloud agentic OCR → markdown
+│   │   ├── document_registry.py       # UUID tracking (documents + pages JSON tables)
+│   │   ├── pdf_parser.py              # ParsedPage dataclass (backward compat)
 │   │   └── chunker.py                 # 500-token recursive chunks with section anchoring
 │   ├── retrieval/
-│   │   ├── embeddings.py              # OpenAI / LocalEmbedder / Qwen3Embedder
+│   │   ├── embeddings.py              # OpenAI text-embedding-3-small
 │   │   └── vector_store.py            # ChromaDB wrapper (cosine similarity, auto-persist)
 │   ├── generation/
 │   │   ├── prompts.py                 # System prompts + 5 explanation modes
@@ -233,22 +216,13 @@ Results are saved to `data/eval_results/` as JSON and CSV.
 
 ---
 
-## Embedding Backends
+## Embedding Backend
 
-Three backends are available, selected via `EMBEDDING_BACKEND` env var or the Streamlit sidebar:
+Only OpenAI embeddings are used:
 
 | Backend | Model | Dim | Requires | Notes |
 |---|---|---|---|---|
-| `openai` | text-embedding-3-small | 1536 | API key | Default, fast, cost ~$0.0001/1K tokens |
-| `local` | all-MiniLM-L6-v2 | 384 | None | Lightweight, CPU-friendly, sentence-transformers |
-| `qwen3` | Qwen3-Embedding-4B | 2560 | ~8 GB VRAM | Highest quality, local, instruction-aware |
-
-### Qwen3-Embedding-4B details
-- Model ID: `Qwen/Qwen3-Embedding-4B` (HuggingFace)
-- Last-token pooling with cosine normalization
-- Queries prefixed with a retrieval instruction; passages encoded without prefix
-- Requires `torch>=2.1.0` and `transformers>=4.51.0`
-- First run downloads ~8 GB of model weights
+| `openai` | text-embedding-3-small | 1536 | API key | Fast, high quality, ~$0.0001/1K tokens |
 
 ---
 
@@ -257,9 +231,9 @@ Three backends are available, selected via `EMBEDDING_BACKEND` env var or the St
 | Variable | Default | Description |
 |---|---|---|
 | `OPENAI_API_KEY` | — | Required for OpenAI embeddings + LLM |
+| `LLAMA_CLOUD_API_KEY` | — | Required for PDF OCR parsing |
 | `LLM_MODEL` | `gpt-4o-mini` | LLM model (`gpt-4o-mini` or `gpt-4o`) |
-| `EMBEDDING_BACKEND` | `openai` | `openai`, `local`, or `qwen3` |
-| `EMBEDDING_MODEL` | `text-embedding-3-small` | Embedding model name (auto-set per backend) |
+| `EMBEDDING_MODEL` | `text-embedding-3-small` | OpenAI embedding model |
 | `CHUNK_SIZE` | `500` | Chunk size in tokens |
 | `CHUNK_OVERLAP` | `50` | Chunk overlap in tokens |
 | `TOP_K_RETRIEVAL` | `4` | Number of chunks to retrieve |
@@ -267,25 +241,13 @@ Three backends are available, selected via `EMBEDDING_BACKEND` env var or the St
 
 ---
 
-## Fully Local Setup (No API Key)
-
-```bash
-# In .env — use local or Qwen3 embeddings
-EMBEDDING_BACKEND=local          # or qwen3 for higher quality
-EMBEDDING_MODEL=all-MiniLM-L6-v2
-```
-
-The LLM (`ChatOpenAI`) still requires an OpenAI key. For a fully offline setup, replace `ChatOpenAI` in `src/generation/` with an Ollama-backed model.
-
----
-
 ## Tech Stack
 
 | Component | Choice | Rationale |
 |---|---|---|
-| **PDF parsing** | PyMuPDF (fitz) | Best math/equation text extraction; unicode normalization |
-| **Chunking** | LangChain RecursiveCharacterTextSplitter | Respects paragraph/sentence boundaries |
-| **Embeddings** | text-embedding-3-small / all-MiniLM-L6-v2 / Qwen3-Embedding-4B | Three backends for different cost/quality tradeoffs |
+| **PDF OCR** | LlamaCloud (agentic tier) | Handles scanned/image PDFs; returns per-page markdown |
+| **Chunking** | LangChain RecursiveCharacterTextSplitter | Respects markdown paragraph/sentence boundaries |
+| **Embeddings** | text-embedding-3-small (OpenAI) | Fast, high quality, single backend |
 | **Vector store** | ChromaDB (cosine, sqlite3 persistence) | Auto-persists, metadata filtering, no manual save step |
 | **LLM** | GPT-4o-mini (default) | Best cost/quality ratio for structured output |
 | **LLM judge** | gpt-5-nano | Fastest/cheapest model for automated evaluation scoring |

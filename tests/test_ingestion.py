@@ -1,77 +1,17 @@
 """
-Tests for the ingestion layer (PDF parser + chunker).
+Tests for the ingestion layer (chunker).
 
-These tests run WITHOUT an OpenAI API key — they use only local code.
-Synthetic text is used so tests never depend on actual PDF files.
+PDF parsing is now handled by LlamaCloud OCR (src.ingestion.ocr).
+These tests cover the chunking logic which operates on plain text/markdown.
+No API key required — uses synthetic text only.
 """
 
 from __future__ import annotations
 
 import pytest
 
-from src.ingestion.pdf_parser import (
-    ParsedPage,
-    PDFParser,
-    _clean_text,
-    _normalize_math,
-)
+from src.ingestion.pdf_parser import ParsedPage
 from src.ingestion.chunker import PDFChunker, TextChunk, _is_heading
-
-
-# ===========================================================================
-# _normalize_math
-# ===========================================================================
-
-class TestNormalizeMath:
-    def test_superscripts(self):
-        assert "r^2" in _normalize_math("r²")
-
-    def test_subscripts(self):
-        result = _normalize_math("P₁")
-        assert "P" in result and "1" in result
-
-    def test_greek_letters(self):
-        result = _normalize_math("rho = ρ and eta = η")
-        assert "rho" in result and "eta" in result
-
-    def test_multiplication_symbol(self):
-        assert "*" in _normalize_math("F = m × a")
-
-    def test_greater_equal(self):
-        assert ">=" in _normalize_math("v ≥ 0")
-
-    def test_less_equal(self):
-        assert "<=" in _normalize_math("P ≤ P_max")
-
-    def test_delta(self):
-        assert "Delta" in _normalize_math("ΔP")
-
-    def test_no_change_plain_text(self):
-        text = "Bernoulli's principle states that P + rho*g*h = constant"
-        assert _normalize_math(text) == text
-
-
-# ===========================================================================
-# _clean_text
-# ===========================================================================
-
-class TestCleanText:
-    def test_removes_soft_hyphen(self):
-        assert "\xad" not in _clean_text("Bern\xadoulli")
-
-    def test_collapses_excessive_blank_lines(self):
-        text = "line1\n\n\n\n\nline2"
-        cleaned = _clean_text(text)
-        assert "\n\n\n" not in cleaned
-
-    def test_rejoins_hyphenated_linebreak(self):
-        text = "Bern-\noulli equation"
-        assert "Bernoulli" in _clean_text(text)
-
-    def test_strips_trailing_whitespace(self):
-        text = "line one   \nline two   "
-        for line in _clean_text(text).splitlines():
-            assert not line.endswith(" ")
 
 
 # ===========================================================================
@@ -184,14 +124,3 @@ class TestPDFChunker:
         )
         assert len(chunks) >= 1
         assert "Pascal" in chunks[0].text
-
-
-# ===========================================================================
-# PDFParser — file-not-found guard
-# ===========================================================================
-
-class TestPDFParserErrors:
-    def test_raises_file_not_found(self):
-        parser = PDFParser()
-        with pytest.raises(FileNotFoundError):
-            parser.parse_file("nonexistent.pdf")

@@ -12,11 +12,10 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PIP_NO_CACHE_DIR=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1
 
-# Install system dependencies for PyMuPDF and potential OCR support
+# Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     curl \
-    git \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
@@ -43,15 +42,15 @@ COPY . .
 # Create necessary directories
 RUN mkdir -p data/vector_store data/eval_results
 
-# Expose Streamlit default port
+# Expose Streamlit port (Render will set PORT env var)
 EXPOSE 8501
 
-# Health check for Streamlit
-HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-    CMD curl --fail http://localhost:8501/_stcore/health || exit 1
+# Render uses PORT env var; default to 8501 for local dev
+ENV PORT=8501
 
-# Set the entrypoint to run Streamlit
-ENTRYPOINT ["streamlit", "run", "app.py"]
-
-# Default Streamlit configuration
-CMD ["--server.port=8501", "--server.address=0.0.0.0", "--server.headless=true", "--browser.gatherUsageStats=false"]
+# Run Streamlit with dynamic port from environment
+CMD streamlit run app.py \
+    --server.port=$PORT \
+    --server.address=0.0.0.0 \
+    --server.headless=true \
+    --browser.gatherUsageStats=false

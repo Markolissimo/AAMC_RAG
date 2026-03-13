@@ -41,7 +41,7 @@ class QAPair:
 # Expected structural sections (shared across all explanation Q&A)
 # ---------------------------------------------------------------------------
 
-TUTOR_SECTIONS = ["Toolkit", "Think It Through", "Analogy", "MCAT Trap", "Memory Rule"]
+TUTOR_SECTIONS = ["Core idea", "Simple picture", "MCAT concept", "Another analogy", "The Hook"]
 MCAT_Q_SECTIONS = ["Question", "Answer Choices", "Correct Answer", "Explanation"]
 
 
@@ -328,7 +328,7 @@ EXPLANATION_QA_PAIRS: list[QAPair] = [
             "speed",
             "pressure",
         ],
-        expected_sections=["Analogy"],  # relaxed — analogy mode doesn't need all sections
+        expected_sections=["Another analogy"],  # relaxed — analogy mode doesn't need all sections
         reference_answer=(
             "A shower curtain blowing inward: fast-moving air from the shower head "
             "creates a low-pressure zone between you and the curtain. Higher pressure "

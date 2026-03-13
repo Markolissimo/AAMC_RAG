@@ -1,0 +1,39 @@
+#OCR
+from llama_cloud import AsyncLlamaCloud
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+client = AsyncLlamaCloud(api_key=os.getenv("LLAMA_CLOUD_API_KEY"))
+
+# Upload and parse a document
+file_obj = await client.files.create(file="./attention_is_all_you_need.pdf", purpose="parse")
+
+result = await client.parsing.parse(
+    file_id=file_obj.id,
+    # The parsing tier. Options: fast, cost_effective, agentic, agentic_plus,
+    tier="agentic",
+    # The version of the parsing tier to use. Use 'latest' for the most recent version,
+    version="latest",
+    # 'expand' controls which result fields are returned in the response.,
+    # Without it, only job metadata is returned. Common fields:,
+    # - "markdown_full", "text_full": Full document content,
+    # - "markdown", "text", "items": Page-level content,
+    # - "images_content_metadata": Presigned URLs for images,
+    expand=["markdown_full", "text_full"],
+)
+
+# Access the full document content
+print("Full markdown:")
+print(result.markdown_full)
+
+After that to save this file as markdown in docs/ folder.
+Recursive splitter.
+The data should be embedded through openai embedder only. No other embedder should be used (get rid of unnecessary imports and code).
+
+Add ability to add files in streamlit app which after adding automatically:
+* do ocr and add markdown to docs/ folder
+* While processing show progress bar, and freeze chat, qa and evaluation bars
+* data (markdown) doc has its own uuid, each page has its own uuid, (two tables) and each page from the embdedds and goes is into vector db.
+In streamlit there should be a chat for form for explaining rejime, thsoe sample queries should be smaller and under the text field.
+The communication (chat, session) should be inmemory so the chat could remember the context of the chat, after ending of session the session deletes.

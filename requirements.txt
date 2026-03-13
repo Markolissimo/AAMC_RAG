@@ -5,24 +5,19 @@ langchain-openai
 langchain-community
 langchain-text-splitters
 
+# Reranking (Advanced RAG)
+flashrank
+
 # Vector store (ChromaDB)
 chromadb
-langchain-chroma    
+langchain-chroma
 
-# PDF parsing (best math preservation)
-pymupdf
-
-# Embeddings — local backends
-sentence-transformers
-torch
-transformers
+# OCR — LlamaCloud agentic parsing
+llama-cloud
 
 # Streamlit UI
 streamlit
 streamlit-extras
-
-# Math rendering
-latex2mathml
 
 # Evaluation & testing
 pytest

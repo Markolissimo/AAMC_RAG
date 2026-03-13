@@ -49,23 +49,24 @@ class _MockEmbedder(BaseEmbedder):
 
 
 _SAMPLE_EXPLANATION = """\
-**Toolkit**
-- P + (1/2)*rho*v^2 + rho*g*h = constant
-- A1*v1 = A2*v2 (continuity equation)
-- Bernoulli's principle
+Think of blood like cars on a highway merging into one lane — when the road narrows, cars speed up.
 
-**Think It Through**
-When fluid enters a narrowing pipe it speeds up. By Bernoulli, faster flow means
-lower pressure. So pressure drops in the narrow section.
+**Core idea**
+When a fluid has to pass through a smaller space, it must move faster to keep up with the flow.
 
-**Analogy**
-Think of cars on a highway merging into one lane — they all speed up in the bottleneck.
+**Simple picture**
+Wide vessel → lots of room → blood moves slower
+Narrow vessel → less room → blood must speed up
 
-**MCAT Trap**
-Students think faster fluid = higher pressure. Wrong! Faster = lower pressure.
+**MCAT concept**
+Continuity equation: A1*v1 = A2*v2
+If area (A) decreases, velocity (v) must increase. Same flow rate, smaller opening.
 
-**Memory Rule**
-Narrow pipe, fast flow, low pressure. Always.
+**Another analogy**
+Put your thumb over a garden hose. The opening shrinks — water shoots out faster.
+
+**The Hook**
+"If you want, I can also show you how Bernoulli connects to this — and the sneaky MCAT trap about pressure."
 """
 
 _SAMPLE_MCQ_RAW = """\
@@ -125,13 +126,13 @@ def mock_vector_store():
 # ===========================================================================
 
 class TestPrompts:
-    def test_system_prompt_contains_toolkit(self):
+    def test_system_prompt_contains_core_idea(self):
         prompt = build_system_prompt(ExplanationMode.STANDARD)
-        assert "Toolkit" in prompt
+        assert "Core idea" in prompt
 
     def test_system_prompt_contains_all_sections(self):
         prompt = build_system_prompt(ExplanationMode.STANDARD)
-        for section in ["Toolkit", "Think It Through", "Analogy", "MCAT Trap", "Memory Rule"]:
+        for section in ["Core idea", "Simple picture", "MCAT concept", "Another analogy", "The Hook"]:
             assert section in prompt, f"Missing section: {section}"
 
     def test_simpler_mode_adds_instruction(self):
@@ -194,9 +195,9 @@ class TestExplanationEngine:
         result = engine.explain("Explain Bernoulli's principle")
         assert isinstance(result.sources, list)
 
-    def test_result_answer_contains_toolkit(self, engine):
+    def test_result_answer_contains_core_idea(self, engine):
         result = engine.explain("Explain Bernoulli's principle")
-        assert "Toolkit" in result.answer
+        assert "Core idea" in result.answer
 
     def test_result_stores_mode(self, engine):
         result = engine.explain("Explain Bernoulli's principle", mode=ExplanationMode.SIMPLER)

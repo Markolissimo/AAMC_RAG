@@ -46,6 +46,7 @@ desktop.ini
 data/vector_store/
 *.sqlite3
 *.db
+*.json
 
 # Experiment artifacts (large binary caches)
 experiments/*.pkl

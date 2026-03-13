@@ -11,7 +11,7 @@ import os
 from dataclasses import dataclass
 
 from langchain_openai import ChatOpenAI
-from langchain_core.messages import HumanMessage, SystemMessage
+from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 from loguru import logger
 
 from src.generation.prompts import (
@@ -20,6 +20,7 @@ from src.generation.prompts import (
     build_system_prompt,
 )
 from src.retrieval.vector_store import VectorStore
+from src.retrieval.reranker import Reranker
 
 
 @dataclass
@@ -51,6 +52,7 @@ class ExplanationEngine:
         self._store = vector_store
         self._model_name = model or os.getenv("LLM_MODEL", "gpt-4o-mini")
         self._top_k = top_k
+        self._reranker = Reranker()
         self._llm = ChatOpenAI(
             model=self._model_name,
             temperature=temperature,
@@ -61,25 +63,49 @@ class ExplanationEngine:
         self,
         question: str,
         mode: ExplanationMode = ExplanationMode.STANDARD,
+        history: list[dict] | None = None,
     ) -> ExplanationResult:
-        # 1. Retrieve relevant chunks
-        sources = self._store.search(question, top_k=self._top_k)
+        """
+        Generate a tutor-style explanation.
+
+        Args:
+            question: Student's question.
+            mode:     Explanation mode (standard, simpler, tighter, …).
+            history:  Prior conversation turns, each a dict with keys
+                      "role" ("user"|"assistant") and "content" (str).
+                      Injected between the system prompt and the current
+                      user turn so the model can maintain context.
+        """
+        # 1. Retrieve wider set, then rerank to top_k
+        initial_results = self._store.search(question, top_k=self._top_k * 3)
+        sources = self._reranker.rerank(question, initial_results, top_k=self._top_k)
         context = self._format_context(sources)
 
         # 2. Build messages
         system_msg = SystemMessage(content=build_system_prompt(mode))
+        messages = [system_msg]
+
+        # Inject prior conversation (last 6 turns max to keep cost low)
+        if history:
+            for turn in history[-6:]:
+                if turn["role"] == "user":
+                    messages.append(HumanMessage(content=turn["content"]))
+                elif turn["role"] == "assistant":
+                    messages.append(AIMessage(content=turn["content"]))
+
         user_content = EXPLANATION_USER_TEMPLATE.format(
             context=context,
             question=question,
         )
-        human_msg = HumanMessage(content=user_content)
+        messages.append(HumanMessage(content=user_content))
 
         logger.info(
-            f"Generating explanation | mode={mode.value} | model={self._model_name}"
+            f"Generating explanation | mode={mode.value} | model={self._model_name} "
+            f"| history_turns={len(history) if history else 0}"
         )
 
         # 3. Call LLM
-        response = self._llm.invoke([system_msg, human_msg])
+        response = self._llm.invoke(messages)
         answer = response.content.strip()
 
         return ExplanationResult(

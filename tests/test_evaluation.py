@@ -70,7 +70,7 @@ class TestQAPairsDataset:
     def test_explanation_sections_subset_of_tutor_sections(self):
         for pair in EXPLANATION_QA_PAIRS:
             for s in pair.expected_sections:
-                assert s in TUTOR_SECTIONS or s in ["Analogy"], \
+                assert s in TUTOR_SECTIONS or s in ["Another analogy"], \
                     f"Unexpected section {s!r} in {pair.id}"
 
     def test_mcat_sections_contain_required(self):

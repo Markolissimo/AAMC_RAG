@@ -63,14 +63,17 @@ tests/
 *.log
 logs/
 
-# Documentation
+# Documentation (exclude all .md except README and base docs in docs/)
 *.md
 !README.md
+!docs/Source-*.md
 
-# Docker files themselves
-Dockerfile
-docker-compose.yml
-.dockerignore
+# Exclude session-uploaded docs (have 8-char suffix)
+docs/*_[a-z0-9][a-z0-9][a-z0-9][a-z0-9][a-z0-9][a-z0-9][a-z0-9][a-z0-9].md
+
+# JSON registries (will be created fresh in container)
+data/documents.json
+data/pages.json
 
 # CI/CD
 .github/

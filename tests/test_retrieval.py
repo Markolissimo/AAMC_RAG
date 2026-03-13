@@ -191,15 +191,8 @@ class TestVectorStorePersistence:
 # ===========================================================================
 
 class TestGetEmbedderFactory:
-    def test_unknown_backend_raises(self, monkeypatch):
-        monkeypatch.setenv("EMBEDDING_BACKEND", "foobar")
-        with pytest.raises(ValueError, match="Unknown embedding backend"):
-            get_embedder("foobar")
-
-    def test_valid_backends_listed_in_error(self, monkeypatch):
-        with pytest.raises(ValueError) as exc_info:
-            get_embedder("bad_backend")
-        msg = str(exc_info.value)
-        assert "openai" in msg
-        assert "local" in msg
-        assert "qwen3" in msg
+    def test_returns_openai_embedder_by_default(self, monkeypatch):
+        monkeypatch.setenv("OPENAI_API_KEY", "test-key")
+        from src.retrieval.embeddings import OpenAIEmbedder
+        embedder = get_embedder()
+        assert isinstance(embedder, OpenAIEmbedder)

@@ -95,7 +95,7 @@ class PDFChunker:
 
         if separators is None:
             # TODO: In the separate vocabulary.py file define separators and import here
-            separators = ["\n\n", "\n", ". ", "! ", "? ", "; ", ", ", " ", ""]
+            separators = ["---", "\n\n", "\n", ". ", "! ", "? ", "; ", ", ", " ", ""]
 
         self._splitter = RecursiveCharacterTextSplitter(
             chunk_size=chunk_size * 4,   # approximate char count (4 chars/token)
@@ -145,3 +145,31 @@ class PDFChunker:
             metadata=metadata or {},
         )
         return self._chunk_single_page(page)
+
+    def chunk_ocr_result(self, ocr_result) -> list[TextChunk]:
+        """
+        Chunk an OCRResult produced by src.ingestion.ocr.parse_pdf.
+
+        Each OCRPage becomes a ParsedPage; doc_id and page_id are stored in
+        chunk metadata for downstream traceability.
+        """
+        chunks: list[TextChunk] = []
+        for ocr_page in ocr_result.pages:
+            page = ParsedPage(
+                source=ocr_result.filename,
+                page_number=ocr_page.page_number,
+                text=ocr_page.text,
+                metadata={
+                    "source":   ocr_result.filename,
+                    "page":     ocr_page.page_number,
+                    "doc_id":   ocr_result.doc_id,
+                    "page_id":  ocr_page.page_id,
+                },
+            )
+            page_chunks = self._chunk_single_page(page)
+            chunks.extend(page_chunks)
+        logger.info(
+            f"Created {len(chunks)} chunks from {len(ocr_result.pages)} OCR page(s) "
+            f"(doc_id={ocr_result.doc_id})"
+        )
+        return chunks

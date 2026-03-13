@@ -1,0 +1,6 @@
+id,topic,difficulty,latency_s,structure_ok,correct_answer_valid,distractor_coverage,section_coverage,hit_at_k,keyword_coverage,question_preview,correct_answer
+mcq_001,buoyancy,medium,5.03,True,True,0.0,1.0,True,1.0,A cube of unknown material is found to float in a tank of water with exactly half of its volume submerged. If the density of water is \(1000 \ \text{k…,A
+mcq_002,Bernoulli's principle in a narrowing pipe,medium,3.95,True,True,0.0,1.0,True,1.0,A horizontal pipe carries water at a steady flow rate. The pipe narrows from a wide section to a narrow section. Which of the following statements abo…,B
+mcq_003,Poiseuille's law and blood vessel resistance,hard,3.54,True,True,0.0,1.0,True,1.0,A patient with atherosclerosis has a plaque that narrows a section of a blood vessel by reducing its radius by 20%. If the original radius of the vess…,D
+mcq_004,Pascal's principle and hydraulic lift,medium,4.43,True,True,0.0,1.0,True,1.0,A hydraulic lift is used to raise a car in a garage. The lift consists of two pistons connected by a confined fluid. The smaller piston has a cross-se…,C
+mcq_005,hydrostatic pressure at depth,easy,4.04,True,True,0.0,1.0,True,0.75,"A diver descends to a depth of 30 meters in the ocean. The density of seawater is approximately 1025 kg/m³, and atmospheric pressure is 101.3 kPa. Ass…",C

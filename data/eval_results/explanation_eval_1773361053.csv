@@ -1,0 +1,23 @@
+id,topic,question,difficulty,latency_s,hit_at_k,mrr,precision_at_k,keyword_coverage,section_coverage,concept_coverage,style_score,answer_length_ok,llm_correctness,aggregate_retrieval,aggregate_generation,overall_score,answer_preview
+exp_001,bernoullis_principle,Explain Bernoulli's principle.,medium,6.5,True,1.0,1.0,1.0,0.8,0.375,0.588,True,0.75,1.0,0.685,0.811,"Imagine you're holding a garden hose. If you cover part of the opening with your thumb, the water shoots out faster, but you feel less pressure pushing back on your thumb. This is the essence of Berno…"
+exp_002,bernoullis_principle,Explain Bernoulli's principle in simpler terms.,easy,6.8,True,1.0,1.0,1.0,0.8,0.667,0.733,True,0.75,1.0,0.743,0.846,"Imagine you're running through a swarm of bees. When you're standing still, the bees can sting you more because they're all around you. But when you start running, they have to chase you, and you get …"
+exp_003,continuity_equation,Explain the continuity equation and why fluid moves faster in a narrow pipe.,medium,6.82,True,1.0,1.0,1.0,0.8,0.429,0.614,True,1.0,1.0,0.846,0.907,"Imagine you're holding a garden hose. When you cover part of the opening with your thumb, the water shoots out faster. You're not changing the amount of water coming out, just how fast it exits.
+
+**Co…"
+exp_004,archimedes_principle,Explain why objects float — Archimedes' principle.,medium,7.71,True,1.0,1.0,1.0,0.8,0.429,0.614,True,1.0,1.0,0.846,0.907,"Imagine you're in a swimming pool holding a big beach ball. When you try to push it underwater, it pops back up to the surface. That's because the water is pushing up on the ball with a force that hel…"
+exp_005,pascals_principle,Explain Pascal's principle and how hydraulic systems work.,medium,7.76,True,1.0,1.0,1.0,0.8,0.333,0.567,True,0.75,1.0,0.677,0.806,"Imagine squeezing a tube of toothpaste. When you press down on one end, the paste flows out the other end, spreading the pressure evenly throughout the tube.
+
+**Core idea**
+Pascal's principle tells us…"
+exp_006,hydrostatic_pressure,Explain hydrostatic pressure and how pressure changes with depth.,easy,5.71,True,1.0,1.0,0.8,0.8,0.571,0.686,True,1.0,0.94,0.874,0.901,"Imagine you're diving into a swimming pool. As you swim deeper, you feel the water pressing more on your ears. This sensation is because the pressure increases as you go deeper underwater.
+
+**Core ide…"
+exp_007,poiseuilles_law,Explain Poiseuille's law and its MCAT implications for blood flow.,hard,9.56,True,1.0,1.0,1.0,0.8,0.571,0.686,True,0.75,1.0,0.724,0.835,"Imagine you're sipping a thick milkshake through a straw. If the straw is wide, it's easy to drink. But if the straw is narrow, you have to suck harder to get the same amount of milkshake.
+
+**Core ide…"
+exp_008,laminar_turbulent_flow,What is the difference between laminar and turbulent flow? What is the Reynolds number?,medium,5.43,True,1.0,1.0,0.8,0.8,0.5,0.65,True,0.75,0.94,0.71,0.802,"Imagine you're floating down a lazy river at a water park. The water moves smoothly around you, and you can predict where you'll go next. That's like laminar flow. Now picture a wild, rushing river wi…"
+exp_009,surface_tension,Explain surface tension and capillary action.,medium,7.38,True,1.0,1.0,0.6,0.8,0.5,0.65,True,0.75,0.88,0.71,0.778,"Imagine a tiny bug walking on the surface of a pond. It doesn't sink because the water's surface acts like a stretched rubber sheet, holding the bug up.
+
+**Core idea**
+Surface tension is like an invis…"
+exp_010,bernoullis_principle,Give another analogy for Bernoulli's principle.,easy,6.89,True,1.0,1.0,1.0,1.0,0.75,0.875,True,1.0,1.0,0.95,0.97,"Imagine you're at a crowded concert. When the music starts, everyone rushes toward the stage. In the middle of the crowd, people are packed tightly and can't move much, so the pressure (or push) you f…"

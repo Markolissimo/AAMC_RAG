@@ -1,0 +1,49 @@
+services:
+  - type: web
+    name: mcat-ai-tutor
+    env: docker
+    region: oregon
+    plan: starter
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    
+    # Environment variables
+    envVars:
+      - key: OPENAI_API_KEY
+        sync: false  # Set this in Render dashboard
+      
+      - key: LLAMA_CLOUD_API_KEY
+        sync: false  # Set this in Render dashboard
+      
+      - key: LLM_MODEL
+        value: gpt-4o
+      
+      - key: EMBEDDING_MODEL
+        value: text-embedding-3-small
+      
+      - key: CHUNK_SIZE
+        value: 500
+      
+      - key: CHUNK_OVERLAP
+        value: 50
+      
+      - key: TOP_K_RETRIEVAL
+        value: 4
+      
+      - key: VECTOR_STORE_PATH
+        value: /app/data/vector_store
+      
+      - key: PYTHONUNBUFFERED
+        value: 1
+    
+    # Disk for persistent vector store
+    disk:
+      name: mcat-data
+      mountPath: /app/data
+      sizeGB: 1
+    
+    # Health check endpoint
+    healthCheckPath: /_stcore/health
+    
+    # Auto-deploy on push to main
+    autoDeploy: true

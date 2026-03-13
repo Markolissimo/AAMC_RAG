@@ -130,6 +130,40 @@ class VectorStore:
     # Persistence
     # ------------------------------------------------------------------
 
+    def add_chunks(self, chunks: Sequence[TextChunk]) -> None:
+        """Add new chunks to an already-loaded ChromaDB collection."""
+        self._require_store()
+        if not chunks:
+            return
+        documents = [
+            Document(page_content=c.text, metadata=c.metadata) for c in chunks
+        ]
+        self._store.add_documents(documents)
+        logger.info(f"Added {len(chunks)} chunks to existing ChromaDB collection.")
+
+    def remove_chunks_by_doc_id(self, doc_id: str) -> int:
+        """
+        Remove all chunks with metadata.doc_id == doc_id from ChromaDB.
+        Returns the number of chunks removed.
+        """
+        self._require_store()
+        
+        # Get all chunks with this doc_id
+        results = self._store._collection.get(
+            where={"doc_id": doc_id},
+            include=["metadatas"]
+        )
+        
+        chunk_ids = results.get("ids", [])
+        if not chunk_ids:
+            logger.info(f"No chunks found for doc_id={doc_id}")
+            return 0
+        
+        # Delete by IDs
+        self._store._collection.delete(ids=chunk_ids)
+        logger.info(f"Removed {len(chunk_ids)} chunk(s) for doc_id={doc_id}")
+        return len(chunk_ids)
+
     def save(self, directory: str | Path) -> None:
         """
         No-op: ChromaDB auto-persists during build_from_chunks() when
