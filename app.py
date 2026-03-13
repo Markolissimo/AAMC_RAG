@@ -144,10 +144,7 @@ with st.sidebar:
         for f in uploaded_files:
             if f.name not in st.session_state.upload_statuses:
                 is_pdf = f.name.lower().endswith(".pdf")
-                if not openai_key:
-                    st.error("⚠️ Set OpenAI API key first.")
-                    break
-                elif is_pdf and not llama_key:
+                if is_pdf and not llama_key:
                     st.error(f"⚠️ LlamaCloud API key required for '{f.name}'.")
                 else:
                     st.session_state.upload_statuses[f.name] = {
@@ -349,9 +346,7 @@ with tab_explain:
 
         # ---- Handle submission ----
         if user_input:
-            if not openai_key:
-                st.error("⚠️ Please enter your OpenAI API key in the sidebar.")
-            elif not _pipeline_ready_guard():
+            if not _pipeline_ready_guard():
                 pass
             else:
                 pipeline = _get_or_init_pipeline()
@@ -441,9 +436,7 @@ with tab_mcq:
                     mcq_topic = topic
 
         if generate_btn:
-            if not openai_key:
-                st.error("⚠️ Please enter your OpenAI API key in the sidebar.")
-            elif not mcq_topic.strip():
+            if not mcq_topic.strip():
                 st.warning("Please enter a topic first.")
             elif not _pipeline_ready_guard():
                 pass
@@ -514,9 +507,7 @@ with tab_eval:
             qa_filter = st.text_input("Filter by Q&A id (optional)", placeholder="exp_001")
 
         if run_eval_btn:
-            if not openai_key:
-                st.error("⚠️ Please enter your OpenAI API key in the sidebar.")
-            elif not _pipeline_ready_guard():
+            if not _pipeline_ready_guard():
                 pass
             else:
                 pipeline = _get_or_init_pipeline()
